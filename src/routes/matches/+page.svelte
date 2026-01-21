@@ -3,6 +3,9 @@
 let player1: string = "John Doe";
 let player2: string = "Jane Doe";
 
+// The starting player for the currect leg where player 1 starts the first leg
+let legStartPlayer = 1;
+
 // Player in turn
 // 1 for player 1, 2 for player 2
 let playerInTurn = 1;
@@ -24,6 +27,10 @@ let player2Throws = [];
 let throw1: number | null = null;
 let throw2: number | null = null;
 let throw3: number | null = null;
+
+// Players last throw
+let player1LastThrow: number | null = null;
+let player2LastThrow: number | null = null;
 
 // Function for calculating the multiplier
 type MultiplierStrategy = (value: number) => number;
@@ -47,6 +54,7 @@ function handleLastThrow() {
     case 1:
       player1Throws.push(throwRecord)
       player1left -= totalThrow;
+      player1LastThrow = totalThrow;
       throw1 = null;
       throw2 = null;
       throw3 = null;
@@ -54,6 +62,7 @@ function handleLastThrow() {
     case 2:
       player2Throws.push(throwRecord)
       player2left -= totalThrow;
+      player2LastThrow = totalThrow;
       throw1 = null;
       throw2 = null;
       throw3 = null;
@@ -79,8 +88,10 @@ function handleThrow(registeredThrow: number) {
   } else if (throw3 === null) {
     throw3 = finalValue;
     handleLastThrow();
-    checkLegWin();
-    toggleTurn();
+    let win = checkLegWin();
+    if (!win) {
+      toggleTurn();
+    }
   } else {
     alert("Error 401 - Already registered 3 throws.");
   }
@@ -120,14 +131,18 @@ function checkLegWin() {
         legs[0]++;
         resetGame();
         console.log("Player 1 wins leg. Standing is now: " + legs[0] + " : " + legs[1]);
+        return true;
       } 
     case 2:
       if (player2left === 0) {
         legs[1]++;
         resetGame();
         console.log("Player 2 wins leg. Standing is now: " + legs[0] + " : " + legs[1]);
+        return true;
       } 
     default:
+      console.log("No player is in 0");
+      return false;
   }
       
 }
@@ -136,14 +151,14 @@ function checkLegWin() {
 function resetGame() {
   player1left = startingScore;
   player2left = startingScore;
+
+  playerInTurn = (legStartPlayer == 1) ? 2 : 1;
+  console.log("New round starting. Starting player is: " + ((playerInTurn == 1) ? player1 : player2));
+  legStartPlayer = (legStartPlayer == 1) ? 2 : 1;
 }
 
 // Function for handling turn toggle
 function toggleTurn() {
-  let players = document.getElementsByClassName("playerName");
-  players[0].classList.toggle("turn");
-  players[1].classList.toggle("turn");
-
   playerInTurn = (playerInTurn === 1) ? 2 : 1;
 }
 </script>
@@ -157,12 +172,12 @@ function toggleTurn() {
   <div class="playerNamesContainer">
     <div class="player1">
       <label>Player 1</label>
-      <p class="playerName turn">{player1}</p>
+      <p class="playerName" class:turn={playerInTurn === 1}>{player1}</p>
     </div>
 
     <div class="player2">
       <label>Player 2</label>
-      <p class="playerName">{player2}</p>
+      <p class="playerName" class:turn={playerInTurn === 2}>{player2}</p>
     </div>
   </div>
 
@@ -174,11 +189,13 @@ function toggleTurn() {
     <div class="roundScoreContainer">
       <div class="playerLeft">
         <label>Remaining:</label>
-        <p class="RoundScore">{player1left}</p>
+        <p class="roundScore" class:active={playerInTurn === 1}>{player1left}</p>
+        <p class="lastThrow">Last visit: {player1LastThrow}</p>
       </div>
       <div class="playerLeft">
         <label>Remaining:</label>
-        <p class="RoundScore">{player2left}</p>
+        <p class="roundScore" class:active={playerInTurn === 2}>{player2left}</p>
+        <p class="lastThrow">Last visit: {player2LastThrow}</p>
       </div>
     </div>
     <div class="throwDisplay">
@@ -218,6 +235,7 @@ function toggleTurn() {
       <button class="throwNum" on:click={() => handleThrow(19)}>19</button> 
       <button class="throwNum" on:click={() => handleThrow(20)}>20</button> 
       <button class="throwNum bull" on:click={() => handleThrow(25)}>25</button> 
+      <button class="throwNum miss" on:click={() => handleThrow(0)}>Miss</button>
       <button class="throwNum undo" class:active={throw1 === null} on:click={() => undoThrow()}>Undo Last</button>
       <button class="throwNum clear" class:active={throw1 === null} on:click={() => clearThrows()}>Clr</button>
     </div>
@@ -319,6 +337,10 @@ function toggleTurn() {
   justify-content: center;
 }
 
+.roundScore.active {
+  font-weight: bold;
+}
+
 /* Handle the styling of the current visit */
 .throwDisplay {
   display: flex;
@@ -379,7 +401,7 @@ function toggleTurn() {
   cursor: pointer;
 }
 
-.bull, .undo{
+.undo{
   grid-column: span 2;
 }
 </style>
