@@ -1,14 +1,55 @@
-<script>
-let player1 = "John Doe";
-let player2 = "Jane Doe";
+<script lang="ts">
+// Players
+let player1: string = "John Doe";
+let player2: string = "Jane Doe";
 
-let bestOfNum = 3;
-let legs = [0, 0];
+// Setup for the number of legs and score
+let bestOfNum: number = 3;
+let legs: number[] = [0, 0];
 
-let player1left = 501;
-let player2left = 501;
+// Setup for the game
+let player1left: number = 501;
+let player2left: number = 501;
 
+// Saving of the players throws
+let player1Throws = [];
+let player2Throws = [];
 
+let throw1: number | null = null;
+let throw2: number | null = null;
+let throw3: number | null = null;
+
+// Function for calculating the multiplier
+type MultiplierStrategy = (value: number) => number;
+
+const single: MultiplierStrategy = (value) => value;
+const double: MultiplierStrategy = (value) => value * 2;
+const triple: MultiplierStrategy = (value) => value * 3;
+
+// The active multiplier strategy
+let multiplier: MultiplierStrategy = single;
+
+// Function for handling throw registering
+function handleThrow(registeredThrow: number) {
+  if (registeredThrow === 25) {
+    if (multiplier === triple) {
+      return alert("Can't triple score on bull");
+    }
+  }
+  const finalValue = multiplier(registeredThrow);
+
+  if (throw1 === null) {
+    throw1 = finalValue;
+  } else if (throw2 === null) {
+    throw2 = finalValue;
+  } else if (throw3 === null) {
+    throw3 = finalValue;
+  } else {
+    alert("Error 401 - Already registered 3 throws.");
+  }
+}
+
+// Function for handling turn toggle
 function toggleTurn() {
   let players = document.getElementsByClassName("playerName");
   players[0].classList.toggle("turn");
@@ -49,36 +90,43 @@ function toggleTurn() {
         <p class="RoundScore">{player2left}</p>
       </div>
     </div>
+    <div class="throwDisplay">
+      <p class="curThrow" id="throw1">{throw1}</p>
+      <p class="curThrow" id="throw2">{throw2}</p>
+      <p class="curThrow" id="throw3">{throw3}</p>
+    </div>
+    <button on:click={() => toggleTurn()}>End Turn</button>
   </div>
 
   <!-- Input number pad -->
   <div class="inputContainer">
     <div class="multipliers">
-      <button class="double">Double</button>
-      <button class="triple">Triple</button>
+      <button class="single" on:click={() => multiplier = single}>Single</button>
+      <button class="double" on:click={() => multiplier = double}>Double</button>
+      <button class="triple" on:click={() => multiplier = triple}>Triple</button>
     </div>
     <div class="throwInput">
-      <button class="throwNum" value="1">1</button> 
-      <button class="throwNum" value="2">2</button> 
-      <button class="throwNum" value="3">3</button> 
-      <button class="throwNum" value="4">4</button> 
-      <button class="throwNum" value="5">5</button> 
-      <button class="throwNum" value="6">6</button> 
-      <button class="throwNum" value="7">7</button> 
-      <button class="throwNum" value="8">8</button> 
-      <button class="throwNum" value="9">9</button> 
-      <button class="throwNum" value="10">10</button> 
-      <button class="throwNum" value="11">11</button> 
-      <button class="throwNum" value="12">12</button> 
-      <button class="throwNum" value="13">13</button> 
-      <button class="throwNum" value="14">14</button> 
-      <button class="throwNum" value="15">15</button> 
-      <button class="throwNum" value="16">16</button> 
-      <button class="throwNum" value="17">17</button> 
-      <button class="throwNum" value="18">18</button> 
-      <button class="throwNum" value="19">19</button> 
-      <button class="throwNum" value="20">20</button> 
-      <button class="throwNum" value="25">25</button> 
+      <button class="throwNum"  on:click={() => handleThrow(1)}>1</button> 
+      <button class="throwNum" on:click={() => handleThrow(2)}>2</button> 
+      <button class="throwNum" on:click={() => handleThrow(3)}>3</button> 
+      <button class="throwNum" on:click={() => handleThrow(4)}>4</button> 
+      <button class="throwNum" on:click={() => handleThrow(5)}>5</button> 
+      <button class="throwNum" on:click={() => handleThrow(6)}>6</button> 
+      <button class="throwNum" on:click={() => handleThrow(7)}>7</button> 
+      <button class="throwNum" on:click={() => handleThrow(8)}>8</button> 
+      <button class="throwNum" on:click={() => handleThrow(9)}>9</button> 
+      <button class="throwNum" on:click={() => handleThrow(10)}>10</button> 
+      <button class="throwNum" on:click={() => handleThrow(11)}>11</button> 
+      <button class="throwNum" on:click={() => handleThrow(12)}>12</button> 
+      <button class="throwNum" on:click={() => handleThrow(13)}>13</button> 
+      <button class="throwNum" on:click={() => handleThrow(14)}>14</button> 
+      <button class="throwNum" on:click={() => handleThrow(15)}>15</button> 
+      <button class="throwNum" on:click={() => handleThrow(16)}>16</button> 
+      <button class="throwNum" on:click={() => handleThrow(17)}>17</button> 
+      <button class="throwNum" on:click={() => handleThrow(18)}>18</button> 
+      <button class="throwNum" on:click={() => handleThrow(19)}>19</button> 
+      <button class="throwNum" on:click={() => handleThrow(20)}>20</button> 
+      <button class="throwNum" on:click={() => handleThrow(25)}>25</button> 
     </div>
   </div>
 
