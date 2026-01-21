@@ -3,6 +3,10 @@
 let player1: string = "John Doe";
 let player2: string = "Jane Doe";
 
+// Player in turn
+// 1 for player 1, 2 for player 2
+let playerInTurn = 1;
+
 // Setup for the number of legs and score
 let bestOfNum: number = 3;
 let legs: number[] = [0, 0];
@@ -29,6 +33,11 @@ const triple: MultiplierStrategy = (value) => value * 3;
 // The active multiplier strategy
 let multiplier: MultiplierStrategy = single;
 
+// Function for handling last throw
+function handleLastThrow() {
+
+}
+
 // Function for handling throw registering
 function handleThrow(registeredThrow: number) {
   if (registeredThrow === 25) {
@@ -44,6 +53,7 @@ function handleThrow(registeredThrow: number) {
     throw2 = finalValue;
   } else if (throw3 === null) {
     throw3 = finalValue;
+    handleLastThrow();
   } else {
     alert("Error 401 - Already registered 3 throws.");
   }
@@ -51,11 +61,26 @@ function handleThrow(registeredThrow: number) {
   multiplier = single;
 }
 
+// Function for undoing throw
+function undoThrow() {
+  if (throw3 != null) {
+    throw3 = null;
+  } else if (throw2 != null) {
+    throw2 = null;
+  } else if (throw1 != null) {
+    throw1 = null;
+  } else {
+    alert("Error 401 - Can't undo without a throw registered.")
+  }
+}
+
 // Function for handling turn toggle
 function toggleTurn() {
   let players = document.getElementsByClassName("playerName");
   players[0].classList.toggle("turn");
   players[1].classList.toggle("turn");
+
+  playerInTurn = (playerInTurn === 1) ? 2 : 1;
 }
 </script>
 
@@ -128,7 +153,8 @@ function toggleTurn() {
       <button class="throwNum" on:click={() => handleThrow(18)}>18</button> 
       <button class="throwNum" on:click={() => handleThrow(19)}>19</button> 
       <button class="throwNum" on:click={() => handleThrow(20)}>20</button> 
-      <button class="throwNum" on:click={() => handleThrow(25)}>25</button> 
+      <button class="throwNum bull" on:click={() => handleThrow(25)}>25</button> 
+      <button class="throwNum undo" class:active={throw1 === null} on:click={() => undoThrow()}>Undo</button>
     </div>
   </div>
 
@@ -228,6 +254,26 @@ function toggleTurn() {
   justify-content: center;
 }
 
+/* Handle the styling of the current visit */
+.throwDisplay {
+  border: 1px solid black;
+  display: flex;
+  flex-direction: row;
+  gap: 50px;
+}
+
+.throwDisplay p {
+  border: 1px solid red;
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-size: 1.5em;
+}
+
 /* Handle the styling of the input field */
 
 /* Multiplier */
@@ -238,5 +284,26 @@ function toggleTurn() {
 .multipliers button.active {
   opacity: 1;
   border: 1px solid red;
+}
+
+.throwInput {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  grid-gap: 3px;
+  border: 1px solid black;
+  border-radius: 10px;
+  width: 300px;
+  height: 200px;
+  padding: 10px;
+}
+
+.throwInput button.active {
+  opacity: 0.5;
+}
+.throwInput button.active:hover {
+  background: none;
+  outline: none;
+  cursor: pointer;
 }
 </style>
