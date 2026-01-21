@@ -12,6 +12,8 @@ let bestOfNum: number = 3;
 let legs: number[] = [0, 0];
 
 // Setup for the game
+let startingScore: number = 501;
+
 let player1left: number = 501;
 let player2left: number = 501;
 
@@ -77,6 +79,7 @@ function handleThrow(registeredThrow: number) {
   } else if (throw3 === null) {
     throw3 = finalValue;
     handleLastThrow();
+    checkLegWin();
     toggleTurn();
   } else {
     alert("Error 401 - Already registered 3 throws.");
@@ -105,8 +108,34 @@ function clearThrows() {
     throw2 = null;
     throw3 = null;
   } else {
-    console.log("Can't clear without having thrown");
+    console.log("Can't clear throws without player having thrown any shots.")
   }
+}
+
+// Function for checking for leg win
+function checkLegWin() {
+  switch(playerInTurn){
+    case 1: 
+      if (player1left === 0) {
+        legs[0]++;
+        resetGame();
+        console.log("Player 1 wins leg. Standing is now: " + legs[0] + " : " + legs[1]);
+      } 
+    case 2:
+      if (player2left === 0) {
+        legs[1]++;
+        resetGame();
+        console.log("Player 2 wins leg. Standing is now: " + legs[0] + " : " + legs[1]);
+      } 
+    default:
+  }
+      
+}
+
+// Function for reseting the game after a leg win
+function resetGame() {
+  player1left = startingScore;
+  player2left = startingScore;
 }
 
 // Function for handling turn toggle
@@ -311,6 +340,15 @@ function toggleTurn() {
 /* Handle the styling of the input field */
 
 /* Multiplier */
+.multipliers {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: space-evenly;
+  padding: 10px;
+}
+
+
 .multipliers button {
   opacity: 0.5;
 }
