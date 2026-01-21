@@ -35,7 +35,30 @@ let multiplier: MultiplierStrategy = single;
 
 // Function for handling last throw
 function handleLastThrow() {
-
+  let totalThrow: number = throw1 + throw2 + throw3;
+  const throwRecord = {
+    throw1: throw1,
+    throw2: throw2,
+    throw3: throw3
+  }
+  switch (playerInTurn) {
+    case 1:
+      player1Throws.push(throwRecord)
+      player1left -= totalThrow;
+      throw1 = null;
+      throw2 = null;
+      throw3 = null;
+      break;
+    case 2:
+      player2Throws.push(throwRecord)
+      player2left -= totalThrow;
+      throw1 = null;
+      throw2 = null;
+      throw3 = null;
+      break;
+    default:
+      console.log("Invalid Player");
+  } 
 }
 
 // Function for handling throw registering
@@ -54,6 +77,7 @@ function handleThrow(registeredThrow: number) {
   } else if (throw3 === null) {
     throw3 = finalValue;
     handleLastThrow();
+    toggleTurn();
   } else {
     alert("Error 401 - Already registered 3 throws.");
   }
@@ -71,6 +95,17 @@ function undoThrow() {
     throw1 = null;
   } else {
     alert("Error 401 - Can't undo without a throw registered.")
+  }
+}
+
+// Function for clear all throws
+function clearThrows() {
+  if (throw1 != null) {
+    throw1 = null;
+    throw2 = null;
+    throw3 = null;
+  } else {
+    console.log("Can't clear without having thrown");
   }
 }
 
@@ -154,7 +189,8 @@ function toggleTurn() {
       <button class="throwNum" on:click={() => handleThrow(19)}>19</button> 
       <button class="throwNum" on:click={() => handleThrow(20)}>20</button> 
       <button class="throwNum bull" on:click={() => handleThrow(25)}>25</button> 
-      <button class="throwNum undo" class:active={throw1 === null} on:click={() => undoThrow()}>Undo</button>
+      <button class="throwNum undo" class:active={throw1 === null} on:click={() => undoThrow()}>Undo Last</button>
+      <button class="throwNum clear" class:active={throw1 === null} on:click={() => clearThrows()}>Clr</button>
     </div>
   </div>
 
@@ -256,14 +292,12 @@ function toggleTurn() {
 
 /* Handle the styling of the current visit */
 .throwDisplay {
-  border: 1px solid black;
   display: flex;
   flex-direction: row;
   gap: 50px;
 }
 
 .throwDisplay p {
-  border: 1px solid red;
   width: 40px;
   height: 40px;
 
@@ -305,5 +339,9 @@ function toggleTurn() {
   background: none;
   outline: none;
   cursor: pointer;
+}
+
+.bull, .undo{
+  grid-column: span 2;
 }
 </style>
