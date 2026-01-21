@@ -47,6 +47,8 @@ function handleThrow(registeredThrow: number) {
   } else {
     alert("Error 401 - Already registered 3 throws.");
   }
+
+  multiplier = single;
 }
 
 // Function for handling turn toggle
@@ -101,9 +103,9 @@ function toggleTurn() {
   <!-- Input number pad -->
   <div class="inputContainer">
     <div class="multipliers">
-      <button class="single" on:click={() => multiplier = single}>Single</button>
-      <button class="double" on:click={() => multiplier = double}>Double</button>
-      <button class="triple" on:click={() => multiplier = triple}>Triple</button>
+      <button class="single" class:active={multiplier === single} on:click={() => multiplier = single}>Single</button>
+      <button class="double" class:active={multiplier === double} on:click={() => multiplier = double}>Double</button>
+      <button class="triple" class:active={multiplier === triple} on:click={() => multiplier = triple}>Triple</button>
     </div>
     <div class="throwInput">
       <button class="throwNum"  on:click={() => handleThrow(1)}>1</button> 
@@ -224,5 +226,17 @@ function toggleTurn() {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+
+/* Handle the styling of the input field */
+
+/* Multiplier */
+.multipliers button {
+  opacity: 0.5;
+}
+
+.multipliers button.active {
+  opacity: 1;
+  border: 1px solid red;
 }
 </style>
