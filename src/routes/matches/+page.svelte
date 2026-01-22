@@ -1,4 +1,7 @@
 <script lang="ts">
+// Variables for match over
+let matchOver: boolean = false;
+let matchWinner: string | null = null;
 
 // Players
 let player1: string = "John Doe";
@@ -13,6 +16,8 @@ let playerInTurn = 1;
 
 // Setup for the number of legs and score
 let bestOfNum: number = 3;
+let legsToWin: number = Math.ceil(bestOfNum / 2);
+console.log(legsToWin);
 let legs: number[] = [0, 0];
 
 // Setup for the game
@@ -156,6 +161,15 @@ function checkLegWin() {
           ...visitLog,
           { legWin: `${player1} wins this leg! Standing: ${legs[0]} : ${legs[1]}`}
         ];
+        if (legs[0] >= legsToWin) {
+          matchOver = true;
+          matchWinner = player1;
+          visitLog = [
+            ...visitLog,
+            { legWin: `${player1} wins the match!`}
+          ];
+          return true;
+        }
         resetGame();
         console.log("Player 1 wins leg. Standing is now: " + legs[0] + " : " + legs[1]);
         return true;
@@ -167,6 +181,15 @@ function checkLegWin() {
           ...visitLog,
           { legWin: `${player1} wins this leg! Standing: ${legs[0]} : ${legs[1]}`}
         ];
+        if (legs[1] >= legsToWin) {
+          matchOver = true;
+          matchWinner = player2;
+          visitLog = [
+            ...visitLog,
+            { legWin: `${player2} wins the match!`}
+          ];
+          return true;
+        }
         resetGame();
         console.log("Player 2 wins leg. Standing is now: " + legs[0] + " : " + legs[1]);
         return true;
@@ -250,30 +273,30 @@ function toggleTurn() {
         <button class="triple" class:active={multiplier === triple} on:click={() => multiplier = triple}>Triple</button>
       </div>
       <div class="throwInput">
-        <button class="throwNum"  on:click={() => handleThrow(1)}>1</button> 
-        <button class="throwNum" on:click={() => handleThrow(2)}>2</button> 
-        <button class="throwNum" on:click={() => handleThrow(3)}>3</button> 
-        <button class="throwNum" on:click={() => handleThrow(4)}>4</button> 
-        <button class="throwNum" on:click={() => handleThrow(5)}>5</button> 
-        <button class="throwNum" on:click={() => handleThrow(6)}>6</button> 
-        <button class="throwNum" on:click={() => handleThrow(7)}>7</button> 
-        <button class="throwNum" on:click={() => handleThrow(8)}>8</button> 
-        <button class="throwNum" on:click={() => handleThrow(9)}>9</button> 
-        <button class="throwNum" on:click={() => handleThrow(10)}>10</button> 
-        <button class="throwNum" on:click={() => handleThrow(11)}>11</button> 
-        <button class="throwNum" on:click={() => handleThrow(12)}>12</button> 
-        <button class="throwNum" on:click={() => handleThrow(13)}>13</button> 
-        <button class="throwNum" on:click={() => handleThrow(14)}>14</button> 
-        <button class="throwNum" on:click={() => handleThrow(15)}>15</button> 
-        <button class="throwNum" on:click={() => handleThrow(16)}>16</button> 
-        <button class="throwNum" on:click={() => handleThrow(17)}>17</button> 
-        <button class="throwNum" on:click={() => handleThrow(18)}>18</button> 
-        <button class="throwNum" on:click={() => handleThrow(19)}>19</button> 
-        <button class="throwNum" on:click={() => handleThrow(20)}>20</button> 
-        <button class="throwNum bull" on:click={() => handleThrow(25)}>25</button> 
-        <button class="throwNum miss" on:click={() => handleThrow(0)}>Miss</button>
-        <button class="throwNum undo" class:active={throw1 === null} on:click={() => undoThrow()}>Undo Last</button>
-        <button class="throwNum clear" class:active={throw1 === null} on:click={() => clearThrows()}>Clr</button>
+        <button disabled={matchOver} class="throwNum"  on:click={() => handleThrow(1)}>1</button> 
+        <button disabled={matchOver} class="throwNum" on:click={() => handleThrow(2)}>2</button> 
+        <button disabled={matchOver} class="throwNum" on:click={() => handleThrow(3)}>3</button> 
+        <button disabled={matchOver} class="throwNum" on:click={() => handleThrow(4)}>4</button> 
+        <button disabled={matchOver} class="throwNum" on:click={() => handleThrow(5)}>5</button> 
+        <button disabled={matchOver} class="throwNum" on:click={() => handleThrow(6)}>6</button> 
+        <button disabled={matchOver} class="throwNum" on:click={() => handleThrow(7)}>7</button> 
+        <button disabled={matchOver} class="throwNum" on:click={() => handleThrow(8)}>8</button> 
+        <button disabled={matchOver} class="throwNum" on:click={() => handleThrow(9)}>9</button> 
+        <button disabled={matchOver} class="throwNum" on:click={() => handleThrow(10)}>10</button> 
+        <button disabled={matchOver} class="throwNum" on:click={() => handleThrow(11)}>11</button> 
+        <button disabled={matchOver} class="throwNum" on:click={() => handleThrow(12)}>12</button> 
+        <button disabled={matchOver} class="throwNum" on:click={() => handleThrow(13)}>13</button> 
+        <button disabled={matchOver} class="throwNum" on:click={() => handleThrow(14)}>14</button> 
+        <button disabled={matchOver} class="throwNum" on:click={() => handleThrow(15)}>15</button> 
+        <button disabled={matchOver} class="throwNum" on:click={() => handleThrow(16)}>16</button> 
+        <button disabled={matchOver} class="throwNum" on:click={() => handleThrow(17)}>17</button> 
+        <button disabled={matchOver} class="throwNum" on:click={() => handleThrow(18)}>18</button> 
+        <button disabled={matchOver} class="throwNum" on:click={() => handleThrow(19)}>19</button> 
+        <button disabled={matchOver} class="throwNum" on:click={() => handleThrow(20)}>20</button> 
+        <button disabled={matchOver} class="throwNum bull" on:click={() => handleThrow(25)}>25</button> 
+        <button disabled={matchOver} class="throwNum miss" on:click={() => handleThrow(0)}>Miss</button>
+        <button disabled={matchOver} class="throwNum undo" class:active={throw1 === null} on:click={() => undoThrow()}>Undo Last</button>
+        <button disabled={matchOver} class="throwNum clear" class:active={throw1 === null} on:click={() => clearThrows()}>Clr</button>
       </div>
     </div>
   </div>
