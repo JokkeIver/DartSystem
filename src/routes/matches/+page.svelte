@@ -226,6 +226,15 @@ function toggleTurn() {
   <h1>New Match</h1>
 </div>
 <div class="mainContainer">
+  {#if matchOver}
+    <div class="matchOver">
+      <h1 class="matchOverHeader">Match Over!</h1>
+      <p class="matchOverText">{matchWinner} won the match with the standing</p>
+      <div class="matchOverStandingContainer">
+        <p class="matchOverStanding">{legs[0]} : {legs[1]}</p>
+      </div>
+    </div>
+  {/if}
   <div class="matchInformationContainer">
     <!-- Players row -->
     <div class="playerNamesContainer">
@@ -540,6 +549,31 @@ function toggleTurn() {
   color: blue;
   margin: 1rem 0;
 }
+
+/* Match over display */
+.matchOver {
+  position: fixed;
+  top: 25%;
+  left: 25%;
+  width: 50vw;
+  height: 50vh;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  border: 1px solid black;
+  border-radius: 10px;
+
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.matchOverStanding {
+  font-size: 2.5em;
+}
+
 
 @media (max-width: 768px) {
   .mainContainer {
