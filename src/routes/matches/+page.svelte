@@ -34,7 +34,7 @@ let player2Throws: throwRecord[] = [];
 
 
 // Saving the scores after each visit for the log
-type VisitLog = {player1Visit: number, player2Visit: number, playerTurn: 1 | 2};
+type VisitLog = | {player1Visit: number, player2Visit: number, playerTurn: 1 | 2} | { legWin: string } | { legStart: string };
 let visitLog: VisitLog[] = [];
 
 let throw1: number | null = null;
@@ -152,6 +152,10 @@ function checkLegWin() {
     case 1: 
       if (player1left === 0) {
         legs[0]++;
+        visitLog = [
+          ...visitLog,
+          { legWin: `${player1} wins this leg! Standing: ${legs[0]} : ${legs[1]}`}
+        ];
         resetGame();
         console.log("Player 1 wins leg. Standing is now: " + legs[0] + " : " + legs[1]);
         return true;
@@ -159,6 +163,10 @@ function checkLegWin() {
     case 2:
       if (player2left === 0) {
         legs[1]++;
+        visitLog = [
+          ...visitLog,
+          { legWin: `${player1} wins this leg! Standing: ${legs[0]} : ${legs[1]}`}
+        ];
         resetGame();
         console.log("Player 2 wins leg. Standing is now: " + legs[0] + " : " + legs[1]);
         return true;
@@ -178,6 +186,11 @@ function resetGame() {
   playerInTurn = (legStartPlayer == 1) ? 2 : 1;
   console.log("New round starting. Starting player is: " + ((playerInTurn == 1) ? player1 : player2));
   legStartPlayer = (legStartPlayer == 1) ? 2 : 1;
+
+  visitLog = [
+    ...visitLog,
+    { legStart: `--- Starting Leg ${legs[0] + legs[1] + 1} ---`}
+  ];
 }
 
 // Function for handling turn toggle
@@ -266,16 +279,25 @@ function toggleTurn() {
   </div>
     <!-- Log for the evolution of the legs -->
     <div class="logContainer">
+    <div class="logHeaderContainer">
+      <h1 class="logHeader">Game log</h1>
+    </div>
       {#each visitLog as visit}
-        <p class="visitLog">
-        <span class:active={visit.playerTurn === 1}>
-          {visit.player1Visit}
-        </span>
-        :
-        <span class:active={visit.playerTurn === 2}>
-          {visit.player2Visit}
-        </span>
-      </p>
+        {#if 'legWin' in visit}
+          <p class="legWin">{visit.legWin}</p>
+        {:else if 'legStart' in visit}
+          <p class="newLeg">{visit.legStart}</p>
+        {:else}
+          <p class="visitLog">
+          <span class:active={visit.playerTurn === 1}>
+            {visit.player1Visit}
+          </span>
+          :
+          <span class:active={visit.playerTurn === 2}>
+            {visit.player2Visit}
+          </span>
+        </p>
+        {/if}
       {/each}
     </div>
 </div>
@@ -449,14 +471,50 @@ function toggleTurn() {
 }
 
 .logContainer {
+  text-align: center;
   grid-column: 2;
   width: 100%;
   height: 100vh;
   border: 1px solid black;
 }
 
+.logContainer h1 {
+  display: inline-block;
+  position: relative;
+  font-size: 2em;
+  margin-bottom: 10px;
+}
+
+.logContainer h1::after {
+  content: "";
+  display: block;
+  height: 2px;
+  width: 100%;
+  background: black;
+}
+
+.visitLog {
+  display: inline-block;
+  padding: 10px;
+}
+
 /* Highlight player who threw in the log */
 .visitLog .active {
   font-weight: bold;
+}
+
+/* Highlight for when leg is won */
+.legWin {
+  text-align: center;
+  font-weight: bold;
+  color: green;
+  margin: 0.5rem 0;
+}
+
+.newLeg {
+  text-align: center;
+  font-weight: bold;
+  color: blue;
+  margin: 1rem 0;
 }
 </style>
