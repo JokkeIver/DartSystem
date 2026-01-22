@@ -474,7 +474,7 @@ function toggleTurn() {
   text-align: center;
   grid-column: 2;
   width: 100%;
-  height: 100vh;
+  height: 70vh;
   border: 1px solid black;
 }
 
@@ -516,5 +516,15 @@ function toggleTurn() {
   font-weight: bold;
   color: blue;
   margin: 1rem 0;
+}
+
+@media (max-width: 768px) {
+  .mainContainer {
+    display: block;
+  }
+
+  .logContainer {
+    display: none;
+  }
 }
 </style>
