@@ -1,4 +1,5 @@
 <script lang="ts">
+
 // Players
 let player1: string = "John Doe";
 let player2: string = "Jane Doe";
@@ -21,8 +22,20 @@ let player1left: number = 501;
 let player2left: number = 501;
 
 // Saving of the players throws
-let player1Throws = [];
-let player2Throws = [];
+type throwRecord = {
+  throwNum1: number,
+  throwNum2: number,
+  throwNum3: number
+};
+
+let player1Throws: throwRecord[] = [];
+let player2Throws: throwRecord[] = [];
+
+
+
+// Saving the scores after each visit for the log
+type VisitLog = {player1Visit: number, player2Visit: number, playerTurn: 1 | 2};
+let visitLog: VisitLog[] = [];
 
 let throw1: number | null = null;
 let throw2: number | null = null;
@@ -44,25 +57,35 @@ let multiplier: MultiplierStrategy = single;
 
 // Function for handling last throw
 function handleLastThrow() {
+  if(throw1 === null || throw2 === null || throw3 === null) return;
   let totalThrow: number = throw1 + throw2 + throw3;
-  const throwRecord = {
-    throw1: throw1,
-    throw2: throw2,
-    throw3: throw3
-  }
   switch (playerInTurn) {
     case 1:
-      player1Throws.push(throwRecord)
+      player1Throws = [
+        ...player1Throws,
+        {throwNum1: throw1, throwNum2: throw2, throwNum3: throw3}
+      ];
       player1left -= totalThrow;
       player1LastThrow = totalThrow;
+      visitLog = [
+        ...visitLog,
+        {player1Visit: player1left, player2Visit: player2left, playerTurn: playerInTurn}
+      ];
       throw1 = null;
       throw2 = null;
       throw3 = null;
       break;
     case 2:
-      player2Throws.push(throwRecord)
+      player2Throws = [
+        ...player2Throws,
+        {throwNum1: throw1, throwNum2: throw2, throwNum3: throw3}
+      ];
       player2left -= totalThrow;
       player2LastThrow = totalThrow;
+      visitLog = [
+        ...visitLog,
+        {player1Visit: player1left, player2Visit: player2left, playerTurn: playerInTurn}
+      ];
       throw1 = null;
       throw2 = null;
       throw3 = null;
@@ -144,7 +167,7 @@ function checkLegWin() {
       console.log("No player is in 0");
       return false;
   }
-      
+
 }
 
 // Function for reseting the game after a leg win
@@ -166,83 +189,96 @@ function toggleTurn() {
 <div class="header">
   <h1>New Match</h1>
 </div>
-
-<div class="matchInformationContainer">
-  <!-- Players row -->
-  <div class="playerNamesContainer">
-    <div class="player1">
-      <label>Player 1</label>
-      <p class="playerName" class:turn={playerInTurn === 1}>{player1}</p>
-    </div>
-
-    <div class="player2">
-      <label>Player 2</label>
-      <p class="playerName" class:turn={playerInTurn === 2}>{player2}</p>
-    </div>
-  </div>
-
-  <!-- Score row -->
-  <div class="legScoreContainer">
-    <p>Best of {bestOfNum}</p>
-    <p class="legScore">{legs[0]} : {legs[1]}</p>
-
-    <div class="roundScoreContainer">
-      <div class="playerLeft">
-        <label>Remaining:</label>
-        <p class="roundScore" class:active={playerInTurn === 1}>{player1left}</p>
-        <p class="lastThrow">Last visit: {player1LastThrow}</p>
+<div class="mainContainer">
+  <div class="matchInformationContainer">
+    <!-- Players row -->
+    <div class="playerNamesContainer">
+      <div class="player1">
+        <label>Player 1</label>
+        <p class="playerName" class:turn={playerInTurn === 1}>{player1}</p>
       </div>
-      <div class="playerLeft">
-        <label>Remaining:</label>
-        <p class="roundScore" class:active={playerInTurn === 2}>{player2left}</p>
-        <p class="lastThrow">Last visit: {player2LastThrow}</p>
+
+      <div class="player2">
+        <label>Player 2</label>
+        <p class="playerName" class:turn={playerInTurn === 2}>{player2}</p>
       </div>
     </div>
-    <div class="throwDisplay">
-      <p class="curThrow" id="throw1">{throw1}</p>
-      <p class="curThrow" id="throw2">{throw2}</p>
-      <p class="curThrow" id="throw3">{throw3}</p>
-    </div>
-    <button on:click={() => toggleTurn()}>End Turn</button>
-  </div>
 
-  <!-- Input number pad -->
-  <div class="inputContainer">
-    <div class="multipliers">
-      <button class="single" class:active={multiplier === single} on:click={() => multiplier = single}>Single</button>
-      <button class="double" class:active={multiplier === double} on:click={() => multiplier = double}>Double</button>
-      <button class="triple" class:active={multiplier === triple} on:click={() => multiplier = triple}>Triple</button>
+    <!-- Score row -->
+    <div class="legScoreContainer">
+      <p>Best of {bestOfNum}</p>
+      <p class="legScore">{legs[0]} : {legs[1]}</p>
+
+      <div class="roundScoreContainer">
+        <div class="playerLeft">
+          <label>Remaining:</label>
+          <p class="roundScore" class:active={playerInTurn === 1}>{player1left}</p>
+          <p class="lastThrow">Last visit: {player1LastThrow}</p>
+        </div>
+        <div class="playerLeft">
+          <label>Remaining:</label>
+          <p class="roundScore" class:active={playerInTurn === 2}>{player2left}</p>
+          <p class="lastThrow">Last visit: {player2LastThrow}</p>
+        </div>
+      </div>
+      <div class="throwDisplay">
+        <p class="curThrow" id="throw1">{throw1}</p>
+        <p class="curThrow" id="throw2">{throw2}</p>
+        <p class="curThrow" id="throw3">{throw3}</p>
+      </div>
+      <button on:click={() => toggleTurn()}>End Turn</button>
     </div>
-    <div class="throwInput">
-      <button class="throwNum"  on:click={() => handleThrow(1)}>1</button> 
-      <button class="throwNum" on:click={() => handleThrow(2)}>2</button> 
-      <button class="throwNum" on:click={() => handleThrow(3)}>3</button> 
-      <button class="throwNum" on:click={() => handleThrow(4)}>4</button> 
-      <button class="throwNum" on:click={() => handleThrow(5)}>5</button> 
-      <button class="throwNum" on:click={() => handleThrow(6)}>6</button> 
-      <button class="throwNum" on:click={() => handleThrow(7)}>7</button> 
-      <button class="throwNum" on:click={() => handleThrow(8)}>8</button> 
-      <button class="throwNum" on:click={() => handleThrow(9)}>9</button> 
-      <button class="throwNum" on:click={() => handleThrow(10)}>10</button> 
-      <button class="throwNum" on:click={() => handleThrow(11)}>11</button> 
-      <button class="throwNum" on:click={() => handleThrow(12)}>12</button> 
-      <button class="throwNum" on:click={() => handleThrow(13)}>13</button> 
-      <button class="throwNum" on:click={() => handleThrow(14)}>14</button> 
-      <button class="throwNum" on:click={() => handleThrow(15)}>15</button> 
-      <button class="throwNum" on:click={() => handleThrow(16)}>16</button> 
-      <button class="throwNum" on:click={() => handleThrow(17)}>17</button> 
-      <button class="throwNum" on:click={() => handleThrow(18)}>18</button> 
-      <button class="throwNum" on:click={() => handleThrow(19)}>19</button> 
-      <button class="throwNum" on:click={() => handleThrow(20)}>20</button> 
-      <button class="throwNum bull" on:click={() => handleThrow(25)}>25</button> 
-      <button class="throwNum miss" on:click={() => handleThrow(0)}>Miss</button>
-      <button class="throwNum undo" class:active={throw1 === null} on:click={() => undoThrow()}>Undo Last</button>
-      <button class="throwNum clear" class:active={throw1 === null} on:click={() => clearThrows()}>Clr</button>
+
+    <!-- Input number pad -->
+    <div class="inputContainer">
+      <div class="multipliers">
+        <button class="single" class:active={multiplier === single} on:click={() => multiplier = single}>Single</button>
+        <button class="double" class:active={multiplier === double} on:click={() => multiplier = double}>Double</button>
+        <button class="triple" class:active={multiplier === triple} on:click={() => multiplier = triple}>Triple</button>
+      </div>
+      <div class="throwInput">
+        <button class="throwNum"  on:click={() => handleThrow(1)}>1</button> 
+        <button class="throwNum" on:click={() => handleThrow(2)}>2</button> 
+        <button class="throwNum" on:click={() => handleThrow(3)}>3</button> 
+        <button class="throwNum" on:click={() => handleThrow(4)}>4</button> 
+        <button class="throwNum" on:click={() => handleThrow(5)}>5</button> 
+        <button class="throwNum" on:click={() => handleThrow(6)}>6</button> 
+        <button class="throwNum" on:click={() => handleThrow(7)}>7</button> 
+        <button class="throwNum" on:click={() => handleThrow(8)}>8</button> 
+        <button class="throwNum" on:click={() => handleThrow(9)}>9</button> 
+        <button class="throwNum" on:click={() => handleThrow(10)}>10</button> 
+        <button class="throwNum" on:click={() => handleThrow(11)}>11</button> 
+        <button class="throwNum" on:click={() => handleThrow(12)}>12</button> 
+        <button class="throwNum" on:click={() => handleThrow(13)}>13</button> 
+        <button class="throwNum" on:click={() => handleThrow(14)}>14</button> 
+        <button class="throwNum" on:click={() => handleThrow(15)}>15</button> 
+        <button class="throwNum" on:click={() => handleThrow(16)}>16</button> 
+        <button class="throwNum" on:click={() => handleThrow(17)}>17</button> 
+        <button class="throwNum" on:click={() => handleThrow(18)}>18</button> 
+        <button class="throwNum" on:click={() => handleThrow(19)}>19</button> 
+        <button class="throwNum" on:click={() => handleThrow(20)}>20</button> 
+        <button class="throwNum bull" on:click={() => handleThrow(25)}>25</button> 
+        <button class="throwNum miss" on:click={() => handleThrow(0)}>Miss</button>
+        <button class="throwNum undo" class:active={throw1 === null} on:click={() => undoThrow()}>Undo Last</button>
+        <button class="throwNum clear" class:active={throw1 === null} on:click={() => clearThrows()}>Clr</button>
+      </div>
     </div>
   </div>
-
+    <!-- Log for the evolution of the legs -->
+    <div class="logContainer">
+      {#each visitLog as visit}
+        <p class="visitLog">
+        <span class:active={visit.playerTurn === 1}>
+          {visit.player1Visit}
+        </span>
+        :
+        <span class:active={visit.playerTurn === 2}>
+          {visit.player2Visit}
+        </span>
+      </p>
+      {/each}
+    </div>
 </div>
-
 <style>
 /* Header with underline */
 .header {
@@ -264,8 +300,15 @@ function toggleTurn() {
   margin-top: 4px;
 }
 
+/* Styling for the main page setup */
+.mainContainer {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
 /* Container stacks players and score vertically */
 .matchInformationContainer {
+  grid-column: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -403,5 +446,17 @@ function toggleTurn() {
 
 .undo{
   grid-column: span 2;
+}
+
+.logContainer {
+  grid-column: 2;
+  width: 100%;
+  height: 100vh;
+  border: 1px solid black;
+}
+
+/* Highlight player who threw in the log */
+.visitLog .active {
+  font-weight: bold;
 }
 </style>
