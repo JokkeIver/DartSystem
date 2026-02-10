@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { onMount, onDestroy } from "svelte";
+
 // Variables for match over
 let matchOver: boolean = false;
 let matchWinner: string | null = null;
@@ -35,7 +37,6 @@ type throwRecord = {
 
 let player1Throws: throwRecord[] = [];
 let player2Throws: throwRecord[] = [];
-
 
 
 // Saving the scores after each visit for the log
@@ -199,7 +200,7 @@ function checkLegWin() {
             ...visitLog,
             { legWin: `${player1} wins the match!`}
           ];
-          return true;
+          return true
         }
         resetGame();
         console.log("Player 1 wins leg. Standing is now: " + legs[0] + " : " + legs[1]);
@@ -266,8 +267,25 @@ function checkGameWin() {
 function toggleTurn() {
   playerInTurn = (playerInTurn === 1) ? 2 : 1;
 }
-</script>
 
+// Allow keypress for single, double and triple
+function on_key_down(event: KeyboardEvent) {
+  if (event.repeat) return;
+
+  switch (event.key) {
+    case "s":
+      multiplier = single;
+      break;
+    case "d":
+      multiplier = double;
+      break;
+    case "t":
+      multiplier = triple;
+      break;
+  }
+}
+</script>
+<svelte:document on:keydown={on_key_down} />
 <div class="header">
   <h1>New Match</h1>
 </div>
