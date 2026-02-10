@@ -64,12 +64,25 @@ let multiplier: MultiplierStrategy = single;
 function handleLastThrow() {
   if(throw1 === null || throw2 === null || throw3 === null) return;
   let totalThrow: number = throw1 + throw2 + throw3;
+  let bust: Boolean;
   switch (playerInTurn) {
     case 1:
       player1Throws = [
         ...player1Throws,
         {throwNum1: throw1, throwNum2: throw2, throwNum3: throw3}
       ];
+      bust = didPlayerBust(totalThrow);
+      if (bust) {
+        visitLog = [
+          ...visitLog,
+          {player1Visit: player1left, player2Visit: player2left, playerTurn: playerInTurn}
+        ];
+        throw1 = null;
+        throw2 = null;
+        throw3 = null;
+        player1LastThrow = 0;
+        break;
+      }
       player1left -= totalThrow;
       player1LastThrow = totalThrow;
       visitLog = [
@@ -85,6 +98,18 @@ function handleLastThrow() {
         ...player2Throws,
         {throwNum1: throw1, throwNum2: throw2, throwNum3: throw3}
       ];
+      bust = didPlayerBust(totalThrow);
+      if (bust) {
+        visitLog = [
+          ...visitLog,
+          {player1Visit: player1left, player2Visit: player2left, playerTurn: playerInTurn}
+        ];
+        throw1 = null;
+        throw2 = null;
+        throw3 = null;
+        player2LastThrow = 0;
+        break;
+      }
       player2left -= totalThrow;
       player2LastThrow = totalThrow;
       visitLog = [
@@ -118,7 +143,13 @@ function handleThrow(registeredThrow: number) {
     handleLastThrow();
     let win = checkLegWin();
     if (!win) {
+      let matchOverBool = checkGameWin();
+      if (!matchOverBool) {
       toggleTurn();
+      } else {
+        matchOver = true;
+        matchWinner = legs[0] === bestOfNum ? player1 : player2;
+      }
     }
   } else {
     alert("Error 401 - Already registered 3 throws.");
@@ -198,7 +229,15 @@ function checkLegWin() {
       console.log("No player is in 0");
       return false;
   }
+}
 
+function didPlayerBust(finalThrow: number) {
+  let playerScore: number = playerInTurn === 1 ? player1left : player2left;
+  let newPlayerScore = playerScore - finalThrow;
+  if (newPlayerScore< 0) {
+    return true; 
+  }
+  return false;
 }
 
 // Function for reseting the game after a leg win
@@ -214,6 +253,13 @@ function resetGame() {
     ...visitLog,
     { legStart: `--- Starting Leg ${legs[0] + legs[1] + 1} ---`}
   ];
+}
+
+function checkGameWin() {
+  if (legs[0] != bestOfNum || legs[1] != bestOfNum) {
+    return false;
+  }
+  return true;
 }
 
 // Function for handling turn toggle
