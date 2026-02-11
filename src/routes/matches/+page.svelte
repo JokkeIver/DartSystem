@@ -298,7 +298,7 @@ function on_key_down(event: KeyboardEvent) {
         <p class="matchOverStanding">{legs[0]} : {legs[1]}</p>
       </div>
     </div>
-  {/if}
+  {:else}
   <div class="matchInformationContainer">
     <!-- Players row -->
     <div class="playerNamesContainer">
@@ -346,26 +346,15 @@ function on_key_down(event: KeyboardEvent) {
         <button class="triple" class:active={multiplier === triple} on:click={() => multiplier = triple}>Triple</button>
       </div>
       <div class="throwInput">
-        <button disabled={matchOver} class="throwNum"  on:click={() => handleThrow(1)}>1</button> 
-        <button disabled={matchOver} class="throwNum" on:click={() => handleThrow(2)}>2</button> 
-        <button disabled={matchOver} class="throwNum" on:click={() => handleThrow(3)}>3</button> 
-        <button disabled={matchOver} class="throwNum" on:click={() => handleThrow(4)}>4</button> 
-        <button disabled={matchOver} class="throwNum" on:click={() => handleThrow(5)}>5</button> 
-        <button disabled={matchOver} class="throwNum" on:click={() => handleThrow(6)}>6</button> 
-        <button disabled={matchOver} class="throwNum" on:click={() => handleThrow(7)}>7</button> 
-        <button disabled={matchOver} class="throwNum" on:click={() => handleThrow(8)}>8</button> 
-        <button disabled={matchOver} class="throwNum" on:click={() => handleThrow(9)}>9</button> 
-        <button disabled={matchOver} class="throwNum" on:click={() => handleThrow(10)}>10</button> 
-        <button disabled={matchOver} class="throwNum" on:click={() => handleThrow(11)}>11</button> 
-        <button disabled={matchOver} class="throwNum" on:click={() => handleThrow(12)}>12</button> 
-        <button disabled={matchOver} class="throwNum" on:click={() => handleThrow(13)}>13</button> 
-        <button disabled={matchOver} class="throwNum" on:click={() => handleThrow(14)}>14</button> 
-        <button disabled={matchOver} class="throwNum" on:click={() => handleThrow(15)}>15</button> 
-        <button disabled={matchOver} class="throwNum" on:click={() => handleThrow(16)}>16</button> 
-        <button disabled={matchOver} class="throwNum" on:click={() => handleThrow(17)}>17</button> 
-        <button disabled={matchOver} class="throwNum" on:click={() => handleThrow(18)}>18</button> 
-        <button disabled={matchOver} class="throwNum" on:click={() => handleThrow(19)}>19</button> 
-        <button disabled={matchOver} class="throwNum" on:click={() => handleThrow(20)}>20</button> 
+          {#each Array(20) as _, i}
+            <button
+              disabled={matchOver}
+              class="throwNum"
+              on:click={() => handleThrow(i+1)}
+            >
+              {i+1}
+            </button>
+          {/each}
         <button disabled={matchOver} class="throwNum bull" on:click={() => handleThrow(25)}>25</button> 
         <button disabled={matchOver} class="throwNum miss" on:click={() => handleThrow(0)}>Miss</button>
         <button disabled={matchOver} class="throwNum undo" class:active={throw1 === null} on:click={() => undoThrow()}>Undo Last</button>
@@ -396,7 +385,9 @@ function on_key_down(event: KeyboardEvent) {
         {/if}
       {/each}
     </div>
+{/if}
 </div>
+
 <style>
 /* Header with underline */
 .header {
