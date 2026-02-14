@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount, onDestroy } from "svelte";
   import { currMatchInfo } from '$lib/store/matchStore.ts';
 
 // Variables for match over
