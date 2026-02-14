@@ -42,8 +42,6 @@ let player2Throws: throwRecord[] = [];
 // Saving the scores after each visit for the log
 type VisitLog = | {player1Visit: number, player2Visit: number, playerTurn: 1 | 2} | { legWin: string } | { legStart: string };
 let visitLog: VisitLog[] = [];
-let player1Throws = [];
-let player2Throws = [];
 
 let throw1: number | null = null;
 let throw2: number | null = null;
