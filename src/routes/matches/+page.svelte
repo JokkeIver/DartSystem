@@ -1,13 +1,14 @@
 <script lang="ts">
 	import { onMount, onDestroy } from "svelte";
+  import { currMatchInfo } from '$lib/store/matchStore.ts';
 
 // Variables for match over
 let matchOver: boolean = false;
 let matchWinner: string | null = null;
 
 // Players
-let player1: string = "John Doe";
-let player2: string = "Jane Doe";
+let player1: string = $currMatchInfo.player1;
+let player2: string = $currMatchInfo.player2;
 
 // The starting player for the currect leg where player 1 starts the first leg
 let legStartPlayer = 1;
@@ -17,7 +18,7 @@ let legStartPlayer = 1;
 let playerInTurn = 1;
 
 // Setup for the number of legs and score
-let bestOfNum: number = 3;
+let bestOfNum: number = $currMatchInfo.bestOf;
 let legsToWin: number = Math.ceil(bestOfNum / 2);
 console.log(legsToWin);
 let legs: number[] = [0, 0];
